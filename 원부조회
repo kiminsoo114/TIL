@@ -1,0 +1,33 @@
+자동차 원부조회.
+
+1. 자동차 원부조회 폼 onload  function 에서 gdsUserInfo에서 정보를 가져온다(ex. SECTOR_ID, USER_NM, USER_ID ETC)
+2. dsSearch binding 되어 있는 필수값 : 차대번호 or 차량번호 둘 중 하나를 반드시 적는다.
+3. dsSearch binding 되어 있는 선택값 : 체크박스로 enable control. 소유자명, 소유자(법인)등록번호, 법정동코드, 소유자주소를 입력.
+4. dsSearch에 gdsUserInfo에서 가져온 정보 setColumn
+5. inDataset : dsSearch / outDataset : dsData1, dsData3
+6. controller단에서 원부조회하는 함수 dsSearch1 정보를 담아서 호출.
+7. 변수에 dsSearch1에 담긴 데이터 get으로 초기화.
+8. 원하는 정보 변수값 담아 request 전송 => 공단과 인터페이스ID와 IP_ADRES를 통해 원하는 정보가 담긴 곳에 SOAP통신을 통해 데이터 공유.
+
+// INTERFACE ID? 
+// 동일 링크 상에 있는 서로 다른 여러 인터페이스를 구별/식별하는 ID (Unique해야한다.)
+
+9. eaiResponse에 값을 받아와서 안에 담긴 정보를 map에 put. (통합원부)
+10. 을부정보 조회. 마찬가지로 다른 인터페이스 ID와 IP_ADRES를 통해서 통신 후 공유.
+11. eaiResponse3에 값을 받아온다.
+12. 화면에서 소유자명과 eaiResponse3에서 입력한 소유자명이 일치할 경우 srchMap에다가 개인정보를 넣고 map.putAll을 통해서 map에다가 붙여넣기.
+13. (12)를 만족하는 경우 소유자(법인) 등록번호와 eaiResponse3의 소유자등록번호 비교.
+13-1. 일치할 경우 주민번호의 앞자리 6자리까지 숫자 뒤7자리는 *로 표시한 값을 변수에 초기화
+13-2. 일치하지 않을 경우 ""값을 변수에 초기화.
+13-3. 이런식으로 법정도코드, 소유자주소도 비교를 하고 정보가 같으면 srchMap => map.putAll을 통해서 map에 정보를 추가적으로 붙여넣는다.
+14. 만약 소유자명이 같지 않을 경우에는 개인정보는 모두 "***"처럼 길이에 맞춰서 map에다가 넣는다.
+15. list의 0번째에 map의 정보를 add
+16. 저당관련 내용도 조회 후에 list의 1번째에 mapb의 정보를 add
+17. get(0), get(1)로 분리 후 mav.addDataSet(dsData1, 0) / mav.addDataSet(dsData3 , 1) 이런식으로 담은 후 return mav
+18. 받아온 정보를 화면의 edit,maskEdit, calendar, combo에 dsData1의 정보를 뿌려주고 저당관련 정보는 grid에 dsData3의 정보를 뿌려준다.
+
+이건 기업민원서비스 내용이고. 정보를 가져오는 방법 자체가 제주행정은 다르다. 
+기업민원서비스의 원부조회 기능을 그대로 가져와 제주행정에 넣어하는데 기존에 호출하는 정보가 완전히 같지가 않아서 문서보고 더 찾아봐야할 듯. 캄캄함.
+
+
+
