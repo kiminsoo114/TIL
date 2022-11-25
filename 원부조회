@@ -5,7 +5,7 @@
 3. dsSearch binding 되어 있는 선택값 : 체크박스로 enable control. 소유자명, 소유자(법인)등록번호, 법정동코드, 소유자주소를 입력.
 4. dsSearch에 gdsUserInfo에서 가져온 정보 setColumn
 5. inDataset : dsSearch / outDataset : dsData1, dsData3
-6. controller단에서 원부조회하는 함수 dsSearch1 정보를 담아서 호출.
+6. controller단에서 원부조회하는 함수 dsSearch 정보를 담아서 호출.
 7. 변수에 dsSearch1에 담긴 데이터 get으로 초기화.
 8. 원하는 정보 변수값 담아 request 전송 => 공단과 인터페이스ID와 IP_ADRES를 통해 원하는 정보가 담긴 곳에 SOAP통신을 통해 데이터 공유.
 
