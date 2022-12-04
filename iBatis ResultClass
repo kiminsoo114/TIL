@@ -1,0 +1,48 @@
+ResultClass와 ResultMap은 SQL의 조회 결과를 반환하는 방식을 지정하는 옵션.
+
+parameterClass와 parameterMap이 쿼리 실행을 위해 input 되는 데이터를 정의하였다면,
+resultClass와 resultMap은 결과 OutPut을 정의한다.
+
+iBatis SQL Mppper
+- SQL 쿼리를 정의한다.
+- 주요 형식
+<태그명 id = "" parameterClass = "" resultClass ="">
+  SQL 쿼리
+</태그명>
+
+※ID 속성
+ - 작성된 쿼리를 식별하기 위한 이름 설정.
+ - 동일한 이름을 사용할 수 없다.
+ 
+※ parameterClass 속성
+ - 쿼리 실행에 필요한 값을 포함하고 있는 클래스 타입을 설정한다.
+ - 기본자료형, ValueObject(VO), Map 타입을 설정할 수 있다.
+
+※ resultClass 속성
+ - 쿼리 실행 후 조회된 값을 담는 클래스의 타입을 설정한다.
+ - SELCT 쿼리일때만사용
+ - 기본자료형, ValueObject, HashMap 타입을 설정할 수 있다.
+ 
+ JSP 구현
+ public int getCountByCountry(String countryId) throws Exception{
+ return (Integer) sqlMap.queryForObject("getCountBYCountry", countryId);
+ }
+ 
+ <select id = "getCountByCountry" parameterClass = "string" resultClass = "int">
+  select count(*)
+  from locations
+  where country_id = #value#
+ </select>
+ 
+ 그림 예시 참고 : https://take-it-into-account.tistory.com/125
+ 
+1. ResultClass
+
+resultClass는 parameterClass와 마찬가지로 패키지명을 포함한 반환 객체를 명시.
+결과는 JDBC resultSet이 해당 객체 자동 매핑되어 결과를 반환하도록 한다.
+만약 select문안의 컬럼 이름이 vo안의 객체들과 같지 않으면 Alias를 사용해서 일치시켜야한다.
+(반드시 이름이 같아야함)
+reusltClass를 사용하면 SQL 쿼리 조회 결과값을 ResultClass값을 vo로 했을 경우
+자동으로 vo에 안의 private값들이랑 매칭을 한다는 의미인듯.
+
+
