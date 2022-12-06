@@ -1,0 +1,92 @@
+1. web.xml이란?
+
+web.xml에서 서블릿 맵핑 되는 방법, 인증이 필요한 URL 등의 정보를 확인한다.
+web.xml은 DD(Deployment Descriptor : 배포설명자) 라고 불리며 Web Application의 설정파일.
+DD는 Web Application 실행 시 메모리에 로드 된다.
+
+즉, web.xml이란 웹 어플리케이션을 실행시킬 때 함께 올라가야할 설정(설명)들을 정의해 놓은것이다.
+
+2. 설정
+
+web.xml은 크게 3가지를 설정한다
+
+1. DispatcherServlet
+2. ContextLoaderListner
+3. Filter 
+
+클라이언트의 요청을 처리하는 'DispatcherServlet'
+웹 어플리케이션 컨텍스트 단위의 설정을 로드하는 'ContextLoaderListener'
+이건 꼭 거쳤으면 좋겠을 때 사용하는 'Filter'
+
+2-1. DispatcherServlet
+
+DispatcherServlet은 클라이언트의 요청을 전달받는 객체이다. 하는 일도 클라이언트의 요청을 처리하는 일이다.
+
+처리순서는
+1. 클라이언트의 요청을 처리해줄 컨트롤러를 찾는다.
+2. 컨트롤러를 실행시킨다(비즈니스 로직 처리)
+3. 클라이언트에게 보여줄 View를 찾는다.
+4. 응답 데이터와 View를 클라이언트에게 전달한다.
+
+요청을 처리할 컨트롤러를 찾는일은 Handler Mapping이라는 객체가 처리한다.
+이 객체는 클라이언트의 요청 경로를 이용해서 컨트롤러를 검색하고, 검색된 객체를 DispatcherServlet에게 리턴한다.
+
+만약 클라이언트가 'http://~~/test'를 요청할 경우 /test를 처리할 컨트롤러 객체를 리턴하는 것이다.
+
+컨트롤러를 실행키시는 일은 Handler Adapter라는 객체가 처리한다. 이 객체는 @Controller 어노테이션을 이용해 구현한 컨트롤러 뿐만 아니라.
+Controller 인터페이스를 구현한 컨트롤러, 특수 목적으로 사용되는 HttpRequestHandler 인터페이스를 구현한 클래스를 동일한 방식으로 실행할 수 있도록 만들어졌다.
+(출처 : 스프링5 입문. 최범균)
+
+즉, 컨트롤러 실행 업무에 특화된 객체로 Controller를 실행하는 것이다.
+
+클라이언트에게 보여질 view를 찾는 일은 ViewResolver객체가 처리한다.
+<property name = "prefix" value="/WEB-INF/view/" />
+<property name = "suffix" value=".jsp" />
+
+설정된 prefix(접두사) , suffix(접미사)를 참조하여서 처리.
+만약 Controller에서 리턴한 view 이름이 hello였다면 /WEB-INF/view/hello.jsp를 찾아 DispatcherServlet에게 리턴한다.
+
+최종적으로 viewResolver가 리턴한 view객체에 응답 데이터를 넣어 클라이언트에게 리턴한다.
+
+2-2. ContextLoaderListener
+
+앞서 DispatcherServlet은 클라이언트의 요청을 처리하는 객체라고 설명했다.
+웹 어플리케이션의 규모가 커진다면, 클라이언트의 요청 또한 다양해질거고 이를 처리할 DispatcherServlet도 늘어날 가능성이 있다.
+다른 성격을 가진 서블릿이 생성될 것이고, 설정 또한 서블릿의 성격에 맞게 각각 적용시켜야한다.
+
+반면에, 모든 서블릿이 공통적으로 가져야할 설정들도 있다. 즉, cServletContext단위가 아닌 Application Context단위의 설정이 필요한데
+이를 ContextLoaderListener객체가 처리한다.
+
+이 객체는 Application Context 단위의 설정을 생성한다.
+참고로 Application Context는  Web Application의 Context이며, 모든 Servlet들이 참조가 가능한 부모 Context이다.
+
+2-3. Filter
+클라이언트에서 온 요청을 Dispatcher Servlet이 받기 전 거치는 부분이 있다. 바로 이 Filter객체이다.
+만약, 스프링 시큐리티 필터가 적용되어 있다면 인가 및 인증 처리를 먼저 처리하고, 인코딩 필터가 적용되어 있다면 클라이언트의 요청데이터를 인코딩한 작업이 선 처리된 후
+Dispatcher Servlet에게 필터링 된 데이터가 전달된다.
+
+---------------------------------
+web.xml구성요소
+
+<servlet> => disPatcher Servlet을 생성할 때 사용한다.
+<servlet-name> => disPatcher Servlet의 이름을 설정할 때 사용한다.
+<servlet-class> => 매핑할 클래스 파일명을 패키지명을 포함하여 정확하게 입력한다.(이 servlet의 저장위치를 의미한다)
+<init-param> => 서블릿을 생성하고 초기화할때 즉, init()을 호출할 때 서블릿 컨테이너가 서블릿에 전달하는 데이터이다. init-param태그는 <servlet>안에서만 존재할 수 있다.
+<param-name> => 매개변수 이름을 적는다
+<param-value> => 매개변수의 값을 설정한다.(classPath:/config/servlet-config.xml 과 같이 지정한다)
+<servlet-mapping> => 특정 servlet을 요청할 때, 전체 경로를 url에 써주면 길고,보안이 취약하니 간단하게 경로로 표현해주는 것.
+<servlet-name> => servlet-mapping이 바라볼 servlet의 이름을 적어준다
+<url-pattern> => 위의 servlet-name에서 처리하게될 url-pattern을 적어준다. (*.do , / 이런것들이 있다)
+<listener> => 특정 이벤트(특정한 사건)가 발생할 경우 실행된다. 이걸 이벤트 핸들링이라고 한다.
+  
+
+
+
+
+
+
+
+
+
+
+
