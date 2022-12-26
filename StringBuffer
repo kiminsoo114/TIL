@@ -40,4 +40,8 @@ class Solution {
 }
 
 append는 문자열을 계속 추가해줄 때 사용하는 함수로 사용가능하다.
+sb가 INSOO라고 치면
+sb.append(my_string) => 이렇게 하면 my_string이 만약 HI다!
+sb = INSOOHI이런식으로 출력이 되는 것을 의미한다.
+
 추가로 원하는 자리에 넣고 싶을때는 insert()함수를 사용하면 된다.
